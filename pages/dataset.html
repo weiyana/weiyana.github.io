@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Grounded Image Text Matching with Mismatched Relation Reasoning">
+  <meta name="keywords" content="vision-language">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GITM-MR</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/954/954591.png">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+  <script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/3.27.0/gradio.js"></script>
+</head>
+
+<style>
+  .expandable-card .card-text-container {
+    max-height: 200px;
+    overflow-y: hidden;
+    position: relative;
+  }
+
+  .expandable-card.expanded .card-text-container {
+    max-height: none;
+  }
+
+  .expand-btn {
+    position: relative;
+    display: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    /* margin-top: -20px; */
+    /* justify-content: center; */
+    color: #510c75;
+    border-color: transparent;
+  }
+
+  .expand-btn:hover {
+    background-color: rgba(200, 200, 200, 0.8);
+    text-decoration: none;
+    border-color: transparent;
+    color: #510c75;
+  }
+
+  .expand-btn:focus {
+    outline: none;
+    text-decoration: none;
+  }
+
+  .expandable-card:not(.expanded) .card-text-container:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+    background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 1));
+  }
+
+  .expandable-card:not(.expanded) .expand-btn {
+    margin-top: -40px;
+  }
+
+  .card-body {
+    padding-bottom: 5px;
+  }
+
+  .vertical-flex-layout {
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .figure-img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .adjustable-font-size {
+    font-size: calc(0.5rem + 2vw);
+  }
+
+  .chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    /* overflow-x: hidden; */
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+
+  #gradio pre {
+    background-color: transparent;
+  }
+</style>
+
+<body>
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">GITM-MR Benchmark</h1>
+            <h3 class="title is-3 publication-title">Grounded Image Text Matching with Mismatched Relation Reasoning</h3>
+            <div class="is-size-5">
+              <span class="author-block">
+                <a href="#" style="color:#f68946;font-weight:normal;">Wu Yu<sup>*</sup></a>,
+              </span>
+              <span class="author-block">
+                <a href="#" style="color:#f68946;font-weight:normal;">Yana Wei<sup>*</sup></a>,
+              </span>
+              <span class="author-block">
+                <a href="#" style="color:#008AD7;font-weight:normal;">Haozhe Wang</a>,
+              </span>
+              <span class="author-block">
+                <a href="#" style="color:#F2A900;font-weight:normal;">Yongfei Liu</a>,
+              </span>
+              <span class="author-block">
+                <a href="#" style="color:#f68946;font-weight:normal;">Sibei Yang</a>,
+              </span>
+              <span class="author-block">
+                <a href="#" style="color:#f68946;font-weight:normal;">Xuming He</a>,
+              </span>
+            </div>
+
+            <br>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><b style="color:#f68946; font-weight:normal">&#x25B6 </b> ShanghaiTech University</b></span>
+              <span class="author-block"><b style="color:#008AD7; font-weight:normal">&#x25B6 </b> Alibaba Group</span>
+              <span class="author-block"><b style="color:#F2A900; font-weight:normal">&#x25B6 </b> ByteDance Inc.3</span>
+              <span class="author-block">&nbsp&nbsp<sup>*</sup>Equal Contribution</span>
+            </div>
+
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2308.01236.pdf" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="#" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+                <!-- <span class="link-block">
+                  <a href="https://llava.hliu.cc" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="far fa-images"></i>
+                    </span>
+                    <span>Demo</span>
+                  </a>
+                </span> -->
+                <span class="link-block">
+                  <a href="#" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-database"></i>
+                    </span>
+                    <span>Dataset Download</span>
+                  </a>
+                </span>
+                <!-- <span class="link-block">
+                  <a href="https://huggingface.co/liuhaotian/LLaVA-13b-delta-v0" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-share-square"></i>
+                    </span>
+                    <span>Model</span>
+                  </a>
+                </span> -->
+
+
+                
+
+                <!-- <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                  </a>
+              </span> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body">
+        <h4 class="subtitle has-text-centered">
+          Grounded Image Text Matching with Mismatched Relation (GITM-MR) is a novel visual-linguistic joint task that evaluates the relation understanding capabilities of transformer-based pre-trained models. GITM-MR requires a model to first determine if an expression describes an image, then localize referred objects or ground the mismatched parts of the text. We provide a benchmark for evaluating pre-trained models on this task, with a focus on the challenging settings of limited data and out-of-distribution sentence lengths.
+        </h4>
+      </div>
+    </div>
+  </section>
+
+  <!-- <section class="section"  style="background-color:#efeff081">
+    <div class="container is-max-desktop" id="gradio">
+      <gradio-app src="https://llava.hliu.cc"></gradio-app>
+    </div>
+  </section> -->
+
+  <section class="section"  style="background-color:#efeff081">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-six-fifths">
+          <h2 class="title is-3">Introduction to Our Benchmark</h2>
+          <div class="content has-text-justified">
+            <p>
+              To conduct systematical study, we construct a benchmark for the GITM-MR task, including a new dataset and two challenging evaluation settings. We first build a dataset of image-text pairs from the public REC dataset, <a href="https://sibeiyang.github.io/dataset/ref-reasoning/">Ref-Reasoning</a>, by substituting the relation phrases to generate mismatched referring expressions for images from the <a href="https://homes.cs.washington.edu/~ranjay/visualgenome/index.html">Visual Genome Dataset</a>. From the provided relation phrases in the LSG offered by the dataset, we manually select a subset of 27 commonly-occurred relations, and assign some contextual close but semantically different ones for each relation in the subset as their mismatched candidates. We control the linguistic bias by several measures, including keeping the relation distribution and checking by language-only model.
+           </p>
+  
+          </div>
+        </div>
+      </div>
+        
+    </div>
+  </section>
+
+
+  
+<section class="section">
+  <!-- Results. -->
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-six-fifths">
+      <h2 class="title is-3"><img id="painting_icon" width="3%" src="https://cdn-icons-png.flaticon.com/512/5886/5886212.png"> Expressions Generation</h2>
+    </div>
+  </div>
+  <!-- </div> -->
+  <!--/ Results. -->    
+<div class="container is-max-desktop">
+
+  <div class="columns is-centered">
+    <div class="column is-full-width">
+      <div class="content has-text-justified">
+        <p>
+          We construct our dataset GITM-MR by a generation program to create mismatch expressions from the corresponding original expressions by partial replacement. First, we identify all the relation phrases in the expressions of the Ref-Reasoning dataset by using an <a href="https://aclanthology.org/W15-2812/">off-the-shelf parser</a>. After that, we manually select a subset of 27 commonly-occurred relations, and assign some relations acceptable to similar contexts but with different semantics, for each relation in the subset, as their replacement candidates. For example, we assign "carry" as an candidate for "wear", and "to the left of" as an candidate for "to the right of". Utilizing human annotations as such significantly reduces the linguistic bias and false negative cases on the generated expressions. Finally, we replace one relation in each expression by a candidate to construct a mismatch expression. The program keeps the relation phrase set and the replaced relation for each expression as the labels for MRR evaluation.
+
+<!-- CSS Code: Place this code in the document's head (between the 'head' tags) -->
+<!-- <style>
+  table.GeneratedTable {
+    width: 100%;
+    background-color: #ffffff;
+    border-collapse: collapse;
+    border-width: 2px;
+    border-color: #c1c4c5;
+    border-style: solid;
+    color: #000000;
+  }
+  
+  table.GeneratedTable td, table.GeneratedTable th {
+    border-width: 2px;
+    border-color: #9b9d9e;
+    border-style: solid;
+    padding: 3px;
+  }
+  
+  table.GeneratedTable thead {
+    background-color: #6691ee;
+  }
+  </style> -->
+  
+  <!-- HTML Code: Place this code in the document's body (between the 'body' tags) where the table should appear -->
+  <!-- <div class="column is-six-fifths" width="80%">
+  <table class="GeneratedTable">
+    <thead>
+      <tr>
+        <th>Data file name</th>
+        <th>File Size</th>
+        <th>Sample Size</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/raw/main/conversation_58k.json">conversation_58k.json</a> </td>
+        <td>126 MB</td>
+        <td>58K</td>
+      </tr>
+      <tr>
+        <td><a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/raw/main/detail_23k.json">detail_23k.json</a></td>
+        <td>20.5 MB</td>
+        <td>23K</td>
+      </tr>
+      <tr>
+        <td><a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/raw/main/complex_reasoning_77k.json">complex_reasoning_77k.json</a></td>
+        <td>79.6 MB</td>
+        <td>77K</td>
+      </tr>
+    </tbody>
+  </table>
+</div> -->
+  <!-- Codes by Quackit.com -->
+  
+        </p>
+        <p>
+          <b>Mismatched relation diversity.</b> In the real-world scenario, the mismatched expressions should be various as the matched expressions, rather than showing certain patterns which are easy to identify. To keep the diversity, we assign multiple substitutions for each relation. The full replacement candidate list is shown in the following table for the reference. We randomly select the substitution when replacing a relation.   
+        </p>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+          <figure style="text-align: center;">
+            <img id="teaser" width="50%" src="../asset/image/phrase-table.png">
+          </figure>
+        </div>
+      </div>
+      <p>
+        <b>Linguistic bias.</b> The generated mismatched expression should have close perplexity in the pre-trained language model <a href="#">BERT</a> with the original matched expression. After the substitution, the relation phrase occurrence distribution in matched and mismatched expressions should be close. We count the distribution of sentence perplexity in the range of 0 to 105 in the left figure, and the frequencies from the main body of the relation phrases belonging to the substitution list in the right figure. The statistics of matched and mismatched expressions in the validation set are shown by the bars with different colors. The results demonstrate the high similarity between matched and mismatched expressions.
+      </p>
+  
+
+
+
+
+      <div class="columns is-centered has-text-centered">
+      <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+        <figure style="text-align: center;">
+          <img id="teaser" width="100%" src="../asset/image/perplexity_val.png">  
+          <figcaption>
+            Sentence perplexity distributions on the validation set. Only the perplexities ranging from 0 to 105 are shown for the ease of reading.
+          </figcaption>
+        </figure>
+        <figure style="text-align: center;">
+          <img id="teaser" width="100%" src="../asset/image/freq_in_val.png">  
+          <figcaption>
+            Relation frequencies on the validation set. Only the body part of the relations are shown for the ease of reading.
+          </figcaption>
+        </figure>
+        <!-- <figure style="text-align: center;">
+          <img id="teaser" width="100%" src="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_instruction_verb_noun_50.png">  
+          <figcaption>
+            Instruction: Complex Reasoning   [<a href="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_instruction_verb_noun_0.html">0</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_instruction_verb_noun_20.html">20</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_instruction_verb_noun_50.html">50</a>]
+          </figcaption>
+        </figure> -->
+      </div>
+      </div>  
+      <p>
+        <b>False mismatch.</b> There still exist image-text pairs where a relational phrase in an expression is replaced, but the entire expression still perfectly describes an object in the image. We call these false mismatched cases. To avoid those unwanted cases from hurting the quality of testing, we hired annotators from <a href="#">Stardust</a> to label the mismatch cases in the test set, indicating whether the constructed mismatched sentence description in each case can match an object in the image. In the end, we only keep the cases that the annotators identified as mismatch in the test set. The final test set contains only the reserved mismatch cases and their corresponding matched cases. 
+      </p>
+
+
+
+      <!-- <div class="columns is-centered has-text-centered">
+        <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+          <figure style="text-align: center;">
+            <img id="teaser" width="100%" src="../asset/image/LLaVA-Instruct-150K_noun_verb/conversation_58k_response_verb_noun_50.png">  
+            <figcaption>
+              Response: Conversation [<a href="../asset/image/LLaVA-Instruct-150K_noun_verb/conversation_58k_response_verb_noun_0.html">0</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/conversation_58k_response_verb_noun_20.html">20</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/conversation_58k_response_verb_noun_50.html">50</a>]
+            </figcaption>
+          </figure>
+          <figure style="text-align: center;">
+            <img id="teaser" width="100%" src="../asset/image/LLaVA-Instruct-150K_noun_verb/detail_23k_response_verb_noun_50.png">  
+            <figcaption>
+              Response: Detailed Description  [<a href="../asset/image/LLaVA-Instruct-150K_noun_verb/detail_23k_response_verb_noun_0.html">0</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/detail_23k_response_verb_noun_20.html">20</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/detail_23k_response_verb_noun_50.html">50</a>]
+            </figcaption>
+          </figure>
+          <figure style="text-align: center;">
+            <img id="teaser" width="100%" src="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_response_verb_noun_50.png">  
+            <figcaption>
+              Response: Complex Reasoning   [<a href="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_response_verb_noun_0.html">0</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_response_verb_noun_20.html">20</a>, <a href="../asset/image/LLaVA-Instruct-150K_noun_verb/complex_reasoning_77k_response_verb_noun_50.html">50</a>]
+            </figcaption>
+          </figure>
+        </div>
+        </div>       -->
+
+    </div>
+  </div>
+
+
+</section>
+ 
+
+<section class="section">
+  <!-- Results. -->
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-six-fifths">
+      <h2 class="title is-3"><img id="painting_icon" width="3%" src="https://cdn-icons-png.flaticon.com/512/5379/5379860.png"> Cases</h2>
+    </div>
+  </div>
+  <!-- </div> -->
+  <!--/ Results. -->    
+<div class="container is-max-desktop">
+
+  <div class="columns is-centered">
+    <div class="column is-full-width">
+      <div class="content has-text-justified"> 
+        <p>
+          The following images show the generated cases in our dataset with the inference process conducted by our model RCRN.
+          
+        </p>
+      </div>
+      <centering>
+        <div style="text-align: center;">
+          <img id="teaser" width="70%" src="../asset/image/case.png">     
+        </div>
+
+      
+      </centering>           
+    </div>
+  </div>
+
+
+</section>
+  
+
+
+
+
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>
+  @misc{wu2023grounded,
+          title={Grounded Image Text Matching with Mismatched Relation Reasoning}, 
+          author={Yu Wu and Yana Wei and Haozhe Wang and Yongfei Liu and Sibei Yang and Xuming He},
+          year={2023},
+          eprint={2308.01236},
+          archivePrefix={arXiv},
+          primaryClass={cs.CV}
+  }
+  </code></pre>
+    </div>
+  </section>
+  
+  <!-- <section class="section" id="Acknowledgement">
+    <div class="container is-max-desktop content">
+      <h2 class="title">Acknowledgement</h2>
+      <p>
+        This website is adapted from <a
+        href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+        Commons Attribution-ShareAlike 4.0 International License</a>.  We thank the LLaMA team for giving us access to their models, and open-source projects, including Alpaca and Vicuna.
+      </p>
+
+      <p>
+<b>Usage and License Notices</b>: The data, code and checkpoint is intended and licensed for research use only. They are also restricted to uses that follow the license agreement of CLIP,  LLaMA, Vicuna and GPT-4. The dataset is CC BY NC 4.0 (allowing only non-commercial use) and models trained using the dataset should not be used outside of research purposes.
+</p>
+
+      <p>
+      <a href='https://github.com/Computer-Vision-in-the-Wild/'><img id="painting_icon" width="10%" src="https://avatars.githubusercontent.com/u/97258247?s=200&v=4"></a> 
+      Related Links: 
+      <a href='https://react-vl.github.io/'>[REACT]</a>  
+      <a href='https://gligen.github.io/'>[GLIGEN]</a> 
+      <a href='https://github.com/Computer-Vision-in-the-Wild/'>[Computer Vision in the Wild (CVinW)]</a> 
+      <a href='https://instruction-tuning-with-gpt-4.github.io/'>[Insutrction Tuning with GPT-4]</a>      
+      </p>    
+    </div>
+  </section> -->
+
+  <script>
+    // Handle message showing
+    function createChatRow(sender, text, imageSrc) {
+      var article = document.createElement("article");
+      article.className = "media"
+
+      var figure = document.createElement("figure");
+      figure.className = "media-left";
+
+      var span = document.createElement("span");
+      span.className = "icon is-large";
+
+      var icon = document.createElement("i");
+      icon.className = "fas fas fa-2x" + (sender === "User" ? " fa-user " : sender === "LLaVA" ? " fa-robot" : "");
+
+      var media = document.createElement("div");
+      media.className = "media-content";
+
+      var content = document.createElement("div");
+      content.className = "content";
+
+      var para = document.createElement("p");
+
+      // wrap text in pre tag to preserve whitespace and line breaks
+      var pre_text = document.createElement("pre");
+      pre_text.style = "background-color: white; font-size: 18px; font-family: Arial; padding: 0; margin: 0; white-space: pre-wrap; word-wrap: break-word;";
+      var paraText = document.createTextNode(text);
+      pre_text.appendChild(paraText);
+
+      var strong = document.createElement("strong");
+      strong.innerHTML = sender;
+      var br = document.createElement("br");
+
+      para.appendChild(strong);
+      para.appendChild(br);
+      para.appendChild(pre_text);
+
+      // Add image if imageSrc is provided
+      if (imageSrc) {
+        var img = document.createElement("img");
+        img.src = imageSrc;
+        img.style = "max-width: 100%; max-height: 300px;"; // Adjust the style as needed
+        para.appendChild(img);
+      }
+
+      content.appendChild(para);
+      media.appendChild(content);
+      span.appendChild(icon);
+      figure.appendChild(span);
+      if (sender !== "Description") {
+        article.appendChild(figure);
+      };
+      article.appendChild(media);
+      return article;
+    }
+
+    function addMessageToChatHistory(sender, message, imageSrc) {
+      const chatHistory = document.querySelector('.chat-history');
+      const chatRow = createChatRow(sender, message, imageSrc);
+      chatHistory.appendChild(chatRow);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function clearChatHistory() {
+      const chatHistory = document.querySelector('.chat-history');
+      chatHistory.innerHTML = "";
+    }
+
+    // 
+    const conversations = [
+      {
+        "description": "monalisa",
+        "turns": [
+          // ["Description", "Please read the description and answer the question."],
+          ["User", "", "/static/../asset/image/monalisa.jpg"],
+          ["User", "Do you know who drew this painting?​"],
+          ["LLaVA",
+            "The painting depicts a woman, commonly believed to be Mona Lisa, the famous artwork by Leonardo da Vinci. " +
+            "It is a portrait painting that showcases the woman's enigmatic smile and has become one of the most famous and iconic art pieces in the world. " +
+            "The original work is displayed in the Louvre Museum in Paris, and it is known for its intricate details, use of oil paint, and the artist's innovative techniques that contributed to its enduring appeal and mystery.​​"
+          ]
+        ]
+      },
+      {
+        "description": "monalisa with dog head",
+        "turns": [
+          ["User", "", "/static/../asset/image/monalisa-fun.jpg"],
+          ["User", "Do you know who drew this painting?​"],
+          ["LLaVA", "The painting depicts a dog in a humorous situation, where it appears to be wearing a woman's dress and standing in front of a landscape. Although the artist of the painting is not explicitly identified, it could be a reference to the famous artist Da Vinci, known for his artistic works, including the Mona Lisa. The painting is likely a creative and comical take on the traditional portrait style, replacing a human figure with a dog dressed in a woman's clothing, making it an interesting and amusing visual piece.​"]
+        ]
+      },
+      {
+        "description": "Titanic Rose and Jack",
+        "turns": [
+          ["User", "", "/static/../asset/image/titanic.jpg"],
+          ["User", "What's the ending of this movie?​​"],
+          ["LLaVA", "​In the image, a young woman is leaning on a man in front of a beautiful sunset, with both of them standing on a boat. They appear to be enjoying a romantic moment together. The scene suggests that they could be depicted as the characters Jack and Rose from the popular movie Titanic. In the movie, their romance blossoms aboard the fictional ocean liner Titanic, with the pair ultimately sharing a passionate kiss as the ship sinks into the ocean. The ending of the movie is known for its emotional and heartfelt scenes, where the characters are forced to say goodbye to each other as they are separated by the sinking ship. The image evokes a sense of romance and nostalgia, paying tribute to the iconic love story portrayed in the movie Titanic.​"]
+        ]
+      },
+      {
+        "description": "Fridge",
+        "turns": [
+          ["User", "", "/static/fridge.jpg"],
+          ["User", "What are the meals that I can cook with these?​​"],
+          ["LLaVA", "With the variety of food items stored in the refrigerator, you can prepare several meals. For example, you can create a fruit salad using the strawberries, blueberries, and carrots. Additionally, you can make a delicious smoothie using the fruits and vegetables, which would be a healthy and nutritious snack or breakfast option. The milk and eggs can be used to create various dishes, such as a milk-based smoothie, a baked casserole, or scrambled eggs. The juice can also be used to make a fresh fruit and juice mix or as a refreshing homemade popsicle. The possibilities are vast, and the meals you can create will depend on your preferences and dietary needs.​​"],
+          ["User", "I would like to do the fruit salad.  Show me the recipe.​"],
+          ["LLaVA",
+            `Certainly! Here's a simple fruit salad recipe using the items in your refrigerator:​
+
+Ingredients:​
+- 2 cups fresh strawberries, sliced​
+- 1 cup fresh blueberries​
+- 1 large carrot, grated​
+- Juice of half a lemon​
+- A handful of chopped fresh parsley or mint​
+- A few ice cubes​
+- Optional: honey or maple syrup (adjust to taste)​
+
+Instructions:​
+1. In a large bowl, combine the sliced strawberries, blueberries, and carrot. Gently toss them together to mix.​
+2. Drizzle the juice of half a lemon over the fruit and vegetables to prevent them from oxidizing and add a refreshing citrus flavor.​
+3. Sprinkle the chopped fresh parsley or mint over the fruit and gently toss once more.​
+4. If desired, add a drizzle of honey or maple syrup for a touch of sweetness. Adjust the amount according to your taste preferences.​
+5. Cover the bowl and refrigerate the fruit salad for at least 30 minutes or up to a few hours. This allows the flavors to meld and creates a more refreshing salad.​
+6. Serve the fruit salad in cups or bowls, garnished with a sprinkle of fresh parsley or mint, if desired.​
+
+This fruit salad recipe is perfect for a healthy snack or side dish, and with the variety of ingredients available in your refrigerator, it should be easy to put together quickly.`]]
+      },
+      {
+        "description": "Beautiful View",
+        "turns": [
+          ["User", "", "/static/view.jpg"],
+          ["User", "What are the things I should be cautious about when I visit here?​​"],
+          ["LLaVA", "When visiting this peaceful location with a pier extending over a serene lake, surrounded by mountains, there are several things to be cautious about. First, pay attention to the weather conditions, as sudden changes in weather, especially strong winds or storms, can cause the water to become rough and pose risks to the stability of the pier. Second, be mindful of the structural integrity of the pier; avoid overloading it with too many people or excessive weight, as this could potentially damage the pier or cause it to collapse. Additionally, be aware of the surrounding wildlife and respect their space; do not harm or disturb them in any way. Finally, if you decide to go fishing, ensure that you adhere to any local fishing regulations and use appropriate fishing techniques to keep the lake ecosystem healthy and maintain the balance of the food chain.​​"],
+          ["User", "Compose an engaging travel blog post about my trip to this place, highlighting the beautiful sceneries, joyful experiences, and include possible anecdotes.​​"],
+          ["LLaVA",
+            `Traveling to this picturesque location with a serene lake and mountains in the background was a refreshing and rejuvenating experience. The pier extending over the calm water provided an excellent vantage point from which to appreciate the breathtaking scenery. As I stood on the pier, I couldn't help but feel a deep connection with nature, taking a moment to soak in the peaceful atmosphere.​
+
+One of the highlights of my trip was undoubtedly the fishing experience. The area is teeming with life, and I was thrilled to land a sizeable catch, despite the modest size of the lake. The joy of fishing in such a beautiful setting was truly rewarding, and it allowed me to take a break from my busy life and truly immerse myself in the tranquility of nature.​
+
+While exploring the surrounding area, I came across a family of birds that had built a nest close to the pier, adding to the charm of the location. Interacting with the wildlife and observing their behavior was an enriching experience that I'll cherish for years to come.​
+
+In conclusion, this idyllic destination provided me with an opportunity to unwind and recharge, surrounded by mesmerizing natural beauty and the gentle sounds of water and wildlife. If you're looking for a serene escape from the hustle and bustle of everyday life, this pier overlooking the lake is the perfect place to find solace and reconnect with nature.`
+          ]
+        ]
+      },
+    ];
+
+    // The current image index
+    let currentIndex = 0;
+
+    // The function to update the displayed chat history
+    function update_dialog_demo() {
+      // Clear the chat history
+      clearChatHistory();
+
+      for (let i = 0; i < conversations[currentIndex].turns.length; i++) {
+        if (conversations[currentIndex].turns[i].length == 2) {
+          addMessageToChatHistory(conversations[currentIndex].turns[i][0], conversations[currentIndex].turns[i][1]);
+        }
+        else {
+          addMessageToChatHistory(conversations[currentIndex].turns[i][0], conversations[currentIndex].turns[i][1], conversations[currentIndex].turns[i][2]);
+        }
+      }
+
+      // scroll to the top of the chat history
+      document.querySelector('.chat-history').scrollTop = 0;
+    }
+
+    // Initialize the displayed image
+    update_dialog_demo();
+
+    // Event listeners for the buttons
+    document.getElementById('prev-question').addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + conversations.length) % conversations.length;
+      update_dialog_demo();
+    });
+
+    document.getElementById('next-question').addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % conversations.length;
+      update_dialog_demo();
+    });
+
+
+  </script>
+
+</body>
+
+</html>
