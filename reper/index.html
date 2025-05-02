@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Reflective Perception (RePer): A dual-model framework for improving large vision-language models through self-correcting, feedback-driven visual reasoning.">
+  <meta property="og:title" content="Perception in Reflection | ICML 2025"/>
+  <meta property="og:description" content="RePer: An iterative visual perception framework using reflective feedback for hallucination reduction and attention alignment."/>
+  <meta property="og:url" content="https://yourdomain.com/reper"/>
+  <meta property="og:image" content="static/images/banner.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:title" content="RePer: Perception in Reflection"/>
+  <meta name="twitter:description" content="ICML 2025 | RePer introduces iterative reflection to improve LVLM perception."/>
+  <meta name="twitter:image" content="static/images/banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="keywords" content="vision-language, self-correction, hallucination, reflective learning, RePer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Perception in Reflection</title>
+  <!-- <link rel="icon" type="image/x-icon" href="static/images/favicon.ico"> -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Perception in Reflection</h1>
+          <div class="is-size-5 publication-authors">
+            <!-- Paper authors -->
+            <span class="author-block">
+              <a href="" target="_blank">Yana Wei</a><sup>*</sup>,</span>
+            <span class="author-block">
+              <a href="" target="_blank">Liang Zhao</a><sup>*</sup>,</span>
+            <span class="author-block">
+              <a href="" target="_blank">Kangheng Lin</a>,</span>
+            <span class="author-block">
+              <a href="" target="_blank">En Yu</a>,</span><br>
+            <span class="author-block">
+              <a href="" target="_blank">Yuang Peng</a>,</span>
+            <span class="author-block">
+              <a href="" target="_blank">Runpei Dong</a>,</span>
+            <span class="author-block">
+              <a href="" target="_blank">Jianjian Sun</a>,
+            </span>
+
+            <span class="author-block">
+              <a href="" target="_blank">Haoran Wei</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Zheng Ge</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Xiangyu Zhang</a>,
+            </span>
+            <br>
+            <span class="author-block">
+              <a href="" target="_blank">Vishal M. Patel</a>
+            </span>
+          
+                
+                
+
+              
+              </div>
+
+              <div class="is-size-5 publication-authors">
+                <span class="author-block">Johns Hopkins University, StepAI<br>ICML 2025<br></span>
+                <span class="eql-cntrb"><small><br><sup>*</sup>Equal Contribution</small></span>
+              </div>
+
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <!-- Arxiv PDF link -->
+                  <span class="link-block">
+                  <a href="https://arxiv.org/abs/2504.07165" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+
+                <!-- Github link -->
+                <span class="link-block">
+                  <a href="https://github.com/weiyana/RePer" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code - Coming Soon...</span>
+                </a>
+              </span>
+
+              <!-- ArXiv abstract Link -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2504.07165" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+
+
+
+              <!-- Dataset -->
+
+                <span class="link-block">
+                    <a href="" target="_blank"
+                        class="external-link button is-normal is-rounded is-dark">
+                        <span class="icon" style="vertical-align: middle; font-size: 20px;">&#129303;</span>
+                        <span style="vertical-align: middle;">Dataset - Coming Soon...</span>
+                    </a>
+                </span>    
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We present a perception in reflection paradigm designed to transcend the limitations of current large vision-language models (LVLMs), which are expected yet often fail to achieve perfect perception initially. Specifically, we propose Reflective Perception (<strong>RePer</strong>), a dual-model reflection mechanism that systematically alternates between policy and critic models, enables iterative refinement of visual perception. This framework is powered by Reflective Perceptual Learning (<strong>RPL</strong>), which reinforces intrinsic reflective capabilities through a methodically constructed visual reflection dataset and reflective unlikelihood training. Comprehensive experimental evaluation demonstrates RePer’s quantifiable improvements in image understanding, captioning precision, and hallucination reduction. Notably, RePer achieves strong alignment between model attention patterns and human visual focus, while RPL optimizes fine-grained and free-form preference alignment. These advancements establish perception in reflection as a robust paradigm for future multimodal agents, particularly in tasks requiring complex reasoning and multi-step manipulation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column has-text-centered">
+        <strong>👉 Project page under construction… Stay tuned!</strong>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- <section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column has-text-centered">
+        <img src="static/images/Fig1.png" alt="Figure 1: RePer Overview" style="max-width: 90%; height: auto;">
+        <p class="is-size-6 has-text-grey">
+          <strong>Figure 1:</strong> RePer employs a policy-critic loop for iterative perceptual refinement.
+        </p>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!--BibTex citation -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{wei2025perceptionreflection,
+      title={Perception in Reflection}, 
+      author={Yana Wei and Liang Zhao and Kangheng Lin and En Yu and Yuang Peng and Runpei Dong and Jianjian Sun and Haoran Wei and Zheng Ge and Xiangyu Zhang and Vishal M. Patel},
+      year={2025},
+      eprint={2504.07165},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2504.07165}, 
+}</code></pre>
+  </div>
+</section>
+<!--End BibTex citation -->
+
+</body>
+</html>

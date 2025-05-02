@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Perception in Reflection | ICML 2025</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+  <style>
+    body { max-width: 900px; margin: auto; padding: 2em; }
+    img { max-width: 100%; }
+    .author-block { font-style: italic; margin-bottom: 1em; }
+    .section { margin-top: 2em; }
+    code { background: #eee; padding: 2px 4px; }
+  </style>
+</head>
+<body>
+  <h1>Perception in Reflection: Self-Correcting Visual Reasoners via Token-Level Feedback</h1>
+
+  <div class="author-block">
+    Yana Wei*, Liang Zhao*, Kangheng Lin, En Yu, Yuang Peng, Runpei Dong, Jianjian Sun,<br>
+    Haoran Wei, Zheng Ge, Xiangyu Zhang, Vishal M. Patel<br>
+    <em>Johns Hopkins University, StepFun, BUPT, HUST, Tsinghua University, UIUC</em>
+  </div>
+
+  <p><strong>Conference:</strong> ICML 2025 (Spotlight)</p>
+  <p><strong>Links:</strong>
+    <a href="#">[Paper]</a> •
+    <a href="#">[Code]</a> •
+    <a href="#">[BibTeX]</a>
+  </p>
+
+  <div class="section">
+    <h2>Abstract</h2>
+    <p>
+      We propose <strong>Reflective Perception (RePer)</strong>, a novel dual-model framework for large vision-language models (LVLMs) that integrates a policy-critic loop to iteratively refine visual understanding. 
+      Enabled by Reflective Perceptual Learning (RPL), RePer dramatically improves perception accuracy, caption detail, and hallucination resistance, aligning attention patterns more closely with human vision. 
+      This reflection-based paradigm represents a powerful alternative to single-pass perception, especially for complex, reasoning-intensive tasks.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Highlights</h2>
+    <ul>
+      <li>🌀 Reflective Perception loop: Multi-turn policy/critic interactions mimic human perception.</li>
+      <li>🧠 Reflective Perceptual Learning: Uses unlikelihood loss with critic feedback to guide token-level corrections.</li>
+      <li>📊 Stronger performance on hallucination benchmarks (HallusionBench, GAIVE, etc.) and detail captioning (DetailCaps).</li>
+      <li>🔍 Attention maps confirm alignment with human visual regions through iterative refinement.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Results</h2>
+    <p>RePer outperforms SOTA models across 6 benchmarks. For example:</p>
+    <ul>
+      <li><strong>DetailCaps:</strong> +6.83% CAPTURE score (13B model)</li>
+      <li><strong>HallusionBench:</strong> 31.28% accuracy (vs. 25.61% with DPO)</li>
+      <li><strong>GAPE Total:</strong> 82.54 vs. baseline 77.37</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>BibTeX</h2>
+    <pre><code>@inproceedings{wei2025reper,
+  title={Perception in Reflection: Self-Correcting Visual Reasoners via Token-Level Feedback},
+  author={Wei, Yana and Zhao, Liang and Lin, Kangheng and Yu, En and Peng, Yuang and Dong, Runpei and Sun, Jianjian and Wei, Haoran and Ge, Zheng and Zhang, Xiangyu and Patel, Vishal M.},
+  booktitle={International Conference on Machine Learning},
+  year={2025}
+}</code></pre>
+  </div>
+
+</body>
+</html>
