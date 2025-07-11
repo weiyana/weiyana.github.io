@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Reflective Perception (RePer): A dual-model framework for improving large vision-language models through self-correcting, feedback-driven visual reasoning.">
+  <meta property="og:title" content="Perception in Reflection | ICML 2025"/>
+  <meta property="og:description" content="RePer: An iterative visual perception framework using reflective feedback for hallucination reduction and attention alignment."/>
+  <meta property="og:url" content="https://yourdomain.com/reper"/>
+  <meta property="og:image" content="static/images/banner.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:title" content="RePer: Perception in Reflection"/>
+  <meta name="twitter:description" content="ICML 2025 | RePer introduces iterative reflection to improve LVLM perception."/>
+  <meta name="twitter:image" content="static/images/banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="keywords" content="vision-language, self-correction, hallucination, reflective learning, RePer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Perception in Reflection</title>
+  <!-- <link rel="icon" type="image/x-icon" href="static/images/favicon.ico"> -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-2 publication-title">
+            <img src="static/images/logo.png" alt="logo" style="height: 2.5em; vertical-align: bottom; margin-right: 5px;">
+            Open Vision Reasoner<br> 
+            Transferring Linguistic Cognitive Behavior for Visual Reasoning
+          </h1>
+          <div class="is-size-5 publication-authors">
+            <!-- Paper authors -->
+            <span class="author-block">
+              <a href="https://weiyana.github.io" target="_blank" style="color: #e89854 !important;">Yana Wei</a>
+              <sup>*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=uJJ5zskAAAAJ&hl=en" target="_blank">Liang Zhao</a>
+              <sup>*†</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=MVZrGkYAAAAJ&hl=en" target="_blank">Jianjian Sun</a>
+              <sup>*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank" style="color: #86d2cc !important;">Kangheng Lin</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank" style="color: #9d8cd1 !important;">Jisheng Yin</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank" style="color: #50ad5c !important;">Jingcheng Hu</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Yinmin Zhang</a>,
+            </span>
+            <br>
+            <span class="author-block">
+              <a href="" target="_blank" style="color: #facc26 !important;">En Yu</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Haoran Lv</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Zejia Weng</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Jia Wang</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Chunrui Han</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank" style="color: #50ad5c !important;">Yuang Peng</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Qi Han</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Zheng Ge</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Xiangyu Zhang</a>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank">Daxin Jiang</a>,
+            </span>
+            
+            <span class="author-block">
+              <a href="https://engineering.jhu.edu/faculty/vishal-patel/" target="_blank" style="color: #e89854 !important;">Vishal M. Patel</a>
+              <sup>†</sup>
+            </span>
+          
+                
+                
+
+              
+              </div>
+
+              <div class="is-size-5 publication-authors">
+                <span class="author-block" style="margin-right: 20px;"><b style="color:#f68946; font-weight:normal">&#x25B6 </b> Johns Hopkins University</b></span>
+                <span class="author-block" style="margin-right: 20px;"><b style="color:#4d9be7; font-weight:normal">&#x25B6 </b> StepAI</b></span>
+                <span class="author-block" style="margin-right: 20px;"><b style="color:#86d2cc; font-weight:normal">&#x25B6 </b> BUPT</b></span>
+                <span class="author-block" style="margin-right: 20px;"><b style="color:#9d8cd1; font-weight:normal">&#x25B6 </b> UCAS</b></span>
+                <span class="author-block" style="margin-right: 20px;"><b style="color:#50ad5c; font-weight:normal">&#x25B6 </b> THU</b></span>
+                <span class="author-block"><b style="color:#facc26; font-weight:normal">&#x25B6 </b> HUST</b></span>
+
+
+
+                <span class="eql-cntrb" style="margin-right: 20px;"><small><br>
+                  <sup>*</sup>Core Contribution</small>
+                </span>
+                <span class="eql-cntrb"><small>
+                  <sup>†</sup>Corresponding Authors</small>
+                </span>
+              </div>
+
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <!-- Arxiv PDF link -->
+                  <span class="link-block">
+                  <a href="https://arxiv.org/abs/2507.05255" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+
+                <!-- Github link -->
+                <span class="link-block">
+                  <a href="https://github.com/Open-Reasoner-Zero/Open-Vision-Reasoner" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Github</span>
+                </a>
+              </span>
+
+              <!-- ArXiv abstract Link -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2507.05255" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv" ></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+
+
+
+              <!-- Dataset -->
+              <span class="link-block">
+                <a href="https://huggingface.co/Kangheng/OVR-7B-RL" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon" style="vertical-align: middle; font-size: 20px;">&#129303;</span>
+                    <span style="vertical-align: middle;">Checkpoints</span>
+                </a>
+            </span>    
+                <span class="link-block">
+                    <a href="" target="_blank"
+                        class="external-link button is-normal is-rounded is-dark">
+                        <span class="icon" style="vertical-align: middle; font-size: 20px;">&#128202;</span>
+                        <span style="vertical-align: middle;">Dataset - Coming Soon...</span>
+                    </a>
+                </span>    
+                
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Overview</h2>
+        <div class="content has-text-justified">
+          <p>
+            The remarkable reasoning capability of large language models (LLMs) stems from <b>cognitive behaviors</b> that emerge through reinforcement with verifiable rewards.
+This work investigates how to transfer this principle to Multimodal LLMs (MLLMs) to unlock advanced visual reasoning. We introduce a two-stage paradigm built on Qwen2.5-VL-7B: a massive linguistic cold-start fine-tuning, 
+followed by multimodal reinforcement learning (RL) spanning nearly <b>1,000 steps</b>—surpassing all previous open-source efforts in scale.
+This pioneering work reveals three fundamental insights:<br>
+<p>
+1) Behavior transfer emerges surprisingly <b>early in cold start</b> due to linguistic mental imagery.<br>
+2) Cold start <b>broadly memorizes</b> visual behaviors, while RL <b>critically discerns</b> and scales up effective patterns.<br>
+3) Transfer <b>strategically favors</b> high-utility behaviors such as visual reflection.<br>
+<p>
+Our resulting model, Open-Vision-Reasoner (OVR), achieves state-of-the-art performance on a suite of reasoning benchmarks, including <strong>95.3%</strong> on MATH500, <b>51.8%</b> on MathVision and <b>54.6%</b> on MathVerse. We release our model, data, and training dynamics to catalyze the development of more capable, behavior-aligned multimodal reasoners.
+          </p>
+          <div class="columns is-centered has-text-centered">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+              <figure style="text-align: center;">
+                <img id="teaser" width="120%" src="static/images/performance.pdf">
+                <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px;">
+                  Fig 1: Performance Evolution on Reasoning Benchmarks. OVR demonstrates sustained
+                  and convergent growth across both linguistic and multi-modal benchmarks throughout the cold
+                  start and RL training.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="columns is-centered has-text-centered">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+              <figure style="text-align: center;">
+                <img id="teaser" width="120%" src="static/images/2_fig1.pdf">
+                <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px;">
+                  Fig 2: Performance comparison with state-of-the-art models on both textual (AIME 2024,
+AIME 2025, MATH500) and multimodal (MathVista, MathVision, MathVerse)
+math reasoning benchmarks.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Cognitive Behavior Preliminaries</h2>
+        <div class="content has-text-justified">
+          <p>
+            <a href="https://arxiv.org/abs/2503.01307" target="_blank"><strong>Linguistic cognitive behaviors</strong></a> are assumed to be essential for reasoning in large language models (LLMs).
+            We define the <strong>visual extensions</strong> of the aforementioned behaviors—visual reflection, divide-and-conquer, visual verification, and goal-driven visual tracing.
+            Their formal definitions, examples, and corresponding linguistic counterparts are provided in the table below, while the figure presents a multimodal example that illustrates both linguistic and visual cognitive behaviors.
+          </p>
+          
+          <p>
+            In the following sections, we present a simple yet effective MLLM training pipeline, comprising a <em>linguistic cold start</em> followed by <em>multimodal reinforcement learning</em>, and systematically analyze the transfer and scaling of these visual cognitive behaviors.
+          </p>
+          
+          <div class="columns is-centered has-text-centered" style="margin-top: 1.5rem;">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+              <figure style="text-align: center;">
+                <img id="teaser" width="100%" src="static/images/tab-behaviors.png" alt="Multimodal behavior figure" style="max-width: 100%;">
+                
+              </figure>
+            </div>
+          </div>
+
+          <div class="columns is-centered has-text-centered" style="margin-top: 1.5rem;">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+              <figure style="text-align: center;">
+                <img id="teaser" width="100%" src="static/images/case.pdf" alt="Multimodal behavior figure" style="max-width: 100%;">
+                
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Training Paradigm</h2>
+        <div class="content has-text-justified">
+          <p>
+            To facilitate efficient cognitive development and cross-modal generalization, we employ the popular 
+            <em>"RL with a cold start"</em> paradigm with two sequential training stages:
+          </p>
+          
+          <ul >
+            <li>
+              <strong>Stage 1: Linguistic Cold Start.</strong>
+              The LLM module is supervised fine-tuned on language-only reasoning datasets distilled from 
+              DeepSeek-R1, establishing core cognitive behaviors such as 
+              backtracking and subgoal decomposition within a purely linguistic setting.
+            </li>
+            
+            <li style="margin-top: 0.8em;">
+              <strong>Stage 2: Multimodal RL.</strong>
+              We apply reinforcement learning with Open-Reasoner-Zero setting 
+              on both text and multimodal tasks using verifiable match rewards. This promotes reasoning generalization 
+              and aligns previously learned cognitive patterns with visual contexts, enabling effective cross-modal transfer.
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Model Performance</h2>
+        <div class="content has-text-justified">
+          <h2 class="title is-4">Language Reasoning</h2>
+            <p>
+              Our model demonstrates exceptional language reasoning capabilities. On the challenging AIME 2024 and 2025 benchmarks, 
+              it dramatically surpasses other 7B open-source models by an average of over 10%, achieving performance comparable 
+              to leading 32B models. This superiority extends to general reasoning tasks, with significant gains of 
+              <strong>+4.6%</strong> on MMLU and <strong>+10.4%</strong> on MMLU-Pro over parameter-matched competitors. 
+              These results highlight the effectiveness of our curated, high-quality cold-start training data.
+            </p>
+            <div class="columns is-centered has-text-centered" style="margin-top: 1.5rem;">
+              <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+                <figure style="text-align: center;">
+                  <img id="teaser" width="100%" src="static/images/tab-lan-reason.png" alt="Multimodal behavior figure" style="max-width: 100%;">
+                  
+                </figure>
+              </div>
+            </div>
+          <h2 class="title is-4">Visual Reasoning</h2>
+            <p>
+              OVR represents a significant breakthrough for 7B-scale models in visual reasoning. It is the <b>first post-trained Qwen2.5-VL-7B model to surpass the 50% threshold on MathVision</b>, while also achieving state-of-the-art performance among 7B models on DynaMath and MathVerse. This strong overall performance is further underscored by a substantial gain on MMMU-Pro (<b>+7.2%</b>) over previous methods. These results demonstrate that reasoning capabilities acquired through language training can effectively transfer to multimodal tasks, resulting in notable improvements in visual reasoning performance.
+            </p>
+            <div class="columns is-centered has-text-centered" style="margin-top: 1.5rem;">
+              <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+                <figure style="text-align: center;">
+                  <img id="teaser" width="100%" src="static/images/tab-vision-reason.png" alt="Multimodal behavior figure" style="max-width: 100%;">
+                  
+                </figure>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Training Dynamics</h2>
+        <div class="content has-text-justified">
+          
+            <p>
+              (1) The cold-start stage shows a step-wise loss decrease. 
+            <p> 
+              (2) In the RL stage, reward (purple, left axis) and average response length (orange, right axis) grow
+steadily, with sharp surges after each sequence length expansion.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+              <img src="static/images/coldstart_dynamic.pdf" alt="Image 1" style="width: 45%;">
+              <img src="static/images/rl_dynamic.pdf" alt="Image 2" style="width: 45%;">
+            </div>
+    
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">In-depth Behavior Analysis</h2>
+        <div class="content has-text-justified">
+            
+            <h5>Visual behaviors emerge remarkably early from cold start.</h5>
+            As depicted in the left figure, this vision-specific behavior emerges in
+significant quantities from the very beginning of the cold-start phase and fluctuates throughout
+subsequent training steps. Strikingly, we observed that even in linguistic problems, DeepSeekR1’s responses frequently exhibited signs of <b>mental imagery</b>. The model appeared to construct internal visualizations to support mathematical reasoning,
+often articulated through phrases such as <em>“let me visualize...”</em> or <em>“let me see the image.”</em>
+        </p>          
+            <h5>Cold-start learns broadly, large-scale RL discerns critically.</h5>
+            As shown in the left figure, after an initial, rapid instillation of patterns during the aggressive cold-start phase, their prevalence is first suppressed then amplified to unprecedented levels during multimodal RL. This counter-intuitive dynamic suggests
+            a clear division of labor: the cold-start phase learns broadly, indiscriminately memorizing all
+            available patterns. In contrast, RL discerns critically, acting as a strategic filter for the crucial
+            tokens and scaling up pivotal behaviors. This process of RL—<b>discarding the dross to select
+            the essence</b>—is significant for achieving superior generalization.
+</p>
+            <h5>Visual transfer of cognitive behaviors is strategic.</h5>
+            As shown in the right image, the
+emergence of backtracking and verification steadily increases across training stages, underscoring their growing importance. Among these, the transfer rate of backtracking shows consistent
+growth—from 2.5% to 17.3%—while verification exhibits near-zero transfer throughout both the
+cold-start and RL phases. This indicates that transfer is <b>a strategic process</b>, for which we posit
+two potential explanations: 
+(1) Backtracking transfers more readily due to DeepSeek-R1’s
+inherent “mental imagination” capabilities, while verification, lacking a direct linguistic precursor, is more difficult for the MLLM to internalize. 
+(2) Mirroring how humans naturally and
+instinctively process visual information, backtracking is a more fundamental component of
+complex visual reasoning, making its amplification a higher priority during the strategic RL
+phase. 
+</p>
+
+            <div style="display: flex; justify-content: center; gap: 20px;">
+              <img src="static/images/behavior-a.pdf" alt="Image 1" style="width: 45%;">
+              <img src="static/images/behavior-b.pdf" alt="Image 2" style="width: 45%;">
+            </div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Visual Perception Analysis and Future Work</h2>
+        <div class="content has-text-justified">
+            
+            <h5>Cold start impairs perception, while RL enhances.</h5>
+            We evaluated both stages of OVR, along
+with the base model Qwen2.5-VL-7B, on a comprehensive set of multimodal benchmarks
+targeting visual perception and recognition. As shown
+in the table, performance steadily improves across tasks such as MMBench and PhyX, underscoring the effectiveness of our training paradigm. The cold-start model shows declines on
+several tasks, notably increased hallucinations, likely due to token distribution shifts
+from large-scale linguistic data. However, the regained performance on benchmarks such as
+MMBench and BLINK demonstrate that long-term multimodal RL can effectively mitigate these
+issues by discerning perceptual capabilities that are critically for multimodal tasks.
+<div class="columns is-centered has-text-centered" style="margin-top: 1.5rem;">
+  <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+    <figure style="text-align: center;">
+      <img id="teaser" width="100%" src="static/images/tab-abl.png" alt="Multimodal behavior figure" style="max-width: 100%;">
+      
+    </figure>
+  </div>
+</div>
+        </p>          
+            <h5>The current unscalability of RL for perception policy.</h5>
+            Throughout the multimodal RL, we
+observed a strong correlation between the reward and the average response length in figure,
+which is a finding consistent with prior practices. This reinforces response length as an
+effective reward proxy, indicative of a scaling property tied to reasoning depth and computational
+resources. However, when focusing on specific discriminative perceptual tasks like OCR and
+counting, we observe a clear divergence. As shown in the figure, while the reward can be effectively
+increased, the average response length remains largely stagnant. This unscalable training dynamic on such challenging tasks hints at a more fundamental issue:
+the absence of certain core visual cognitive behaviors.
+</p>
+
+
+<div class="columns is-centered has-text-centered" style="margin-top: 1.5rem;">
+  <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">  
+    <figure style="text-align: center;">
+      <img id="teaser" width="70%" src="static/images/perceptual_training_dynamics.pdf" alt="Multimodal behavior figure" style="max-width: 100%;">
+      
+    </figure>
+  </div>
+</div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- <section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column has-text-centered">
+        <strong>👉 Project page under construction… Stay tuned!</strong>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+<!-- <section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column has-text-centered">
+        <img src="static/images/Fig1.png" alt="Figure 1: RePer Overview" style="max-width: 90%; height: auto;">
+        <p class="is-size-6 has-text-grey">
+          <strong>Figure 1:</strong> RePer employs a policy-critic loop for iterative perceptual refinement.
+        </p>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!--BibTex citation -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    If you find this work useful, please consider citing it:
+  </p>
+    <pre><code>
+@misc{wei2025openvisionreasonertransferring,
+title={Open Vision Reasoner: Transferring Linguistic Cognitive Behavior for Visual Reasoning}, 
+  author={Yana Wei and Liang Zhao and Jianjian Sun and Kangheng Lin and Jisheng Yin and
+  Jingcheng Hu and Yinmin Zhang and En Yu and Haoran Lv and Zejia Weng and Jia Wang and
+  Chunrui Han and Yuang Peng and Qi Han and Zheng Ge and Xiangyu Zhang and Daxin Jiang and
+  Vishal M. Patel},
+  year={2025},
+  eprint={2507.05255},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2507.05255}, 
+}
+    </code></pre>
+    Thanks for your reading and support! If you have any questions or suggestions, please feel free to contact us via email: 
+    <a href="mailto:ywei66@jh.edu" style="color: #3273dc;">ywei66@jh.edu</a>, <a href="mailto:zhaoliang02@stepfun.com" style="color: #3273dc;">zhaoliang02@stepfun.com</a>, <a href="mailto:vpatel36@jhu.edu" style="color: #3273dc;">vpatel36@jhu.edu</a>
+  </div>
+</section>
+<!--End BibTex citation -->
+
+</body>
+</html>
