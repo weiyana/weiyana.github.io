@@ -40,7 +40,10 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Perception in Reflection</h1>
+          <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+            <img src="static/images/0-logo.png" alt="RePer Logo" style="width: 60px; height: 70px; margin-right: 20px;">
+            <h1 class="title is-1 publication-title" style="margin: 0;"><span style="color: #2b968d;">Per</span>ception in <span style="color: #2b968d;">Re</span>flection</h1>
+          </div>
           <div class="is-size-5 publication-authors">
             <!-- Paper authors -->
             <span class="author-block">
@@ -88,7 +91,7 @@
                 <div class="publication-links">
                   <!-- Arxiv PDF link -->
                   <span class="link-block">
-                  <a href="https://arxiv.org/abs/2504.07165" target="_blank"
+                  <a href="https://icml.cc/virtual/2025/poster/44894" target="_blank"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -104,7 +107,7 @@
                   <span class="icon">
                     <i class="fab fa-github"></i>
                   </span>
-                  <span>Code - Coming Soon...</span>
+                  <span>Code</span>
                 </a>
               </span>
 
@@ -156,13 +159,161 @@
     </div>
   </div>
 </section>
+
+<section class="section hero ">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Introduction</h2>
+            <div class="content has-text-justified">
+            <h3 class="title is-4">🧠 Motivation</h3>
+            <p>
+              Though existing works believe well-trained LVLMs can achieve sufficiently accurate initial perception, hallucinations and misperception are commonly observed. This work is inspired by the fact that <b>human establish cognition through iterative observation</b>. 
+            
+            <p><b><i>A reasonable perception paradigm for LVLMs should be iterative rather than a single-pass.</i></b> 
+
+            <div class="content has-text-justified">
+              <h3 class="title is-4">💡 Key Ideas</h3>
+              <p>
+                <b>Reflective Perceptual Learning (RPL)</b>: 
+                (1) Builds a perception-feedback loop through a curated visual reflection dataset.
+                (2) Utilizes Reflective Unlikelihood Training to capture preferences and prevent behavioral collapse.
+                <br>
+
+                <b>Reflective Perception</b>: 
+                Employs a policy-critic inference architecture that allows LVLMs to perform perception and reflection separately via multi-turn dialogues
+            <div class="content has-text-justified">
+              <h3 class="title is-4">🙌 Highlights</h3>
+              <p>
+                
+                1. RePer <b>progressively shifts image attention toward human-aligned regions</b> through iterative reflection, resulting in perceptual patterns that more closely mirror human focus.
+                <br>
+                2. Reflective Perceptual Learning serves as <b>a free-form preference optimization</b> that unifies various preference learning paradigms (DPO and LiPO), while enabling fine-grained supervision through explicit feedback signals. 
+                <br>
+                3. RePer is an <b>accurate and informative image captioner</b> that significantly reduces hallucinations.
+
+
+        
+
+            
+
+            
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Visual Reflection Dataset</h2>
+        <div class="content has-text-justified">
+          <p> Visual Reflection Dataset Construction Pipeline and one data sample
+
+
+          <div class="has-text-centered">
+            <img src="static/images/2-dataset.png" alt="Dataset Construction Pipeline" style="width: 90%; margin-bottom: 20px;">
+          </div>
+          <div class="has-text-centered">
+            <img src="static/images/3-data-case.png" alt="Dataset Examples" style="width: 90%; margin-bottom: 20px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Training and Evaluation Framework</h2>
+        
+        <div class="content has-text-justified">
+          <h3 class="title is-4">Reflective Unlikelihood Training</h3>
+          
+
+
+          <div class="has-text-centered">
+            <img src="static/images/3-2-latex.png" alt="Dataset Construction Pipeline" style="width: 70%; margin-bottom: 20px;">
+          </div>
+          <p> 
+            1. Unlikelihood: Prevent the model from overfitting to multi-turn responses and avoid the behavioral collapse
+            <br>
+            2. Normalized rewards: Balance likelihood and unlikelihood.
+            
+          
+        </div>
+
+        <div class="content has-text-justified">
+          <h3 class="title is-4">Reflective Perception</h3>
+          <p> A collaborative interaction between the well-trained policy and critic agents.
+          <div class="has-text-centered">
+            <img src="static/images/4-pipeline.png" alt="Dataset Examples" style="width: 90%; margin-bottom: 20px;">
+          </div>
+
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Key Insights</h2>
+        <div class="content has-text-justified">
+          
+
+
+          
+          <div class="content has-text-justified">
+            <h5 class="title is-4">RePer Progressively Aligns Human Attention</h5>
+            <div class="has-text-centered">
+              <img src="static/images/5-attention.png" alt="Dataset Construction Pipeline" style="width: 90%; margin-bottom: 20px;">
+            </div>
+          
+            The model accurately shifts its attention emphasis towards the correct image tokens, rather than over-focusing on a few insignificant ones.
+            
+          </div>
+
+          <div class="content has-text-justified">
+            <h5 class="title is-4">RPL is a Free-Form Preference Optimization</h5>
+            <div class="has-text-centered">
+              <img src="static/images/6-latex.png" alt="Dataset Construction Pipeline" style="width: 90%; margin-bottom: 20px;">
+            </div>
+
+           
+            Rewards increasing linearly from  rounds 1 to T. The model mainly penalizes poor samples (more unlikelihood) in the initial rounds, while it gradually shifts to rewarding good samples (more likelihood) in later rounds. 
+            This helps the model avoid overfitting to poor initial samples and, importantly, allows it to progressively learn to distinguish between good and bad samples.
+          </div>
+            
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 <!-- End paper abstract -->
 
 <section class="section">
   <div class="container">
     <div class="columns is-centered">
       <div class="column has-text-centered">
-        <strong>👉 Project page under construction… Stay tuned!</strong>
+        <strong>👉 For performance, ablations, in-depth analysis, and more details, please refer to the paper and the github repo.</strong>
+        <br>
+        <br>
+        <strong>🏠 Project page under construction… Stay tuned!</strong>
+        <br>
+        <br>
+        <strong>💪 The dataset, model, and code will be released soon!</strong>
+        
       </div>
     </div>
   </div>
