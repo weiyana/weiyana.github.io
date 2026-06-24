@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="PerceptionRubrics: a rubric-based benchmark that calibrates multimodal evaluation to human perception via Circular Peer-Review golden captions and a gated Must-Right / Easy-Wrong scoring mechanism.">
+  <meta property="og:title" content="PerceptionRubrics"/>
+  <meta property="og:description" content="Calibrating Multimodal Evaluation to Human Perception: 1,038 information-dense images and 12,000+ instance-specific rubrics with gated scoring."/>
+  <meta property="og:image" content="static/images/figure-first.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:title" content="PerceptionRubrics: Calibrating Multimodal Evaluation to Human Perception"/>
+  <meta name="twitter:description" content="A rubric-based MLLM perception benchmark with gated scoring, aligned to human preference."/>
+  <meta name="twitter:image" content="static/images/figure-first.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="keywords" content="multimodal evaluation, MLLM, perception benchmark, rubrics, image captioning, hallucination, human alignment">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>PerceptionRubrics</title>
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <style>
+    .lb-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:1.2rem 0 0.8rem;}
+    .lb-tabs{display:inline-flex;background:#e3f0fa;border-radius:9px;padding:4px;}
+    .lb-tab{border:none;background:transparent;color:#5a7185;font:inherit;font-weight:600;font-size:0.92rem;
+      padding:7px 16px;border-radius:7px;cursor:pointer;transition:all .15s;}
+    .lb-tab:hover{color:#2b5876;}
+    .lb-tab.is-active{background:#fff;color:#2b6ca3;box-shadow:0 1px 3px rgba(70,120,165,.20);}
+    .lb-search{border:1px solid #cfe0ee;border-radius:8px;padding:8px 12px;font:inherit;font-size:0.92rem;
+      min-width:190px;background:#fff;color:#2b3f50;}
+    .lb-search:focus{outline:none;border-color:#7fb4dd;box-shadow:0 0 0 3px rgba(127,180,221,.25);}
+    .lb-wrap{overflow-x:auto;border:1px solid #d7e7f3;border-radius:12px;box-shadow:0 2px 12px rgba(90,140,185,.10);}
+    .lb-table{border-collapse:separate;border-spacing:0;width:100%;min-width:880px;font-size:0.9rem;}
+    .lb-table thead th{position:sticky;top:0;z-index:2;background:#cfe5f6;color:#2b5a7d;font-weight:700;
+      padding:11px 9px;text-align:center;cursor:pointer;white-space:nowrap;user-select:none;transition:background .15s;
+      border-bottom:2px solid #b4d4ec;}
+    .lb-table thead th:hover{background:#bedcf1;}
+    .lb-table thead th.lb-left{text-align:left;}
+    .lb-table thead th.lb-overall{background:#b3d6f0;color:#23506f;}
+    .lb-table thead th .lb-arrow{font-size:.72em;opacity:.55;margin-left:3px;}
+    .lb-table thead th.sorted{background:#aed2ef;}
+    .lb-table thead th.sorted .lb-arrow{opacity:1;}
+    .lb-table tbody td{padding:9px 9px;text-align:center;border-bottom:1px solid #edf4fa;color:#3a4b59;white-space:nowrap;}
+    .lb-table tbody tr:nth-child(even){background:#f4f9fd;}
+    .lb-table tbody tr:hover{background:#e6f2fb;}
+    .lb-rank{width:42px;color:#7b93a6;}
+    .lb-model,.lb-left{text-align:left !important;}
+    .lb-table td.lb-model{font-weight:600;color:#22384a;}
+    .lb-overall,.lb-table td.lb-overall{font-weight:700;background:rgba(127,180,221,.14);}
+    .lb-table tbody tr:hover td.lb-overall{background:rgba(127,180,221,.26);}
+    .lb-best{color:#1f86a8;font-weight:750;}
+    .lb-badge{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.03em;padding:2px 6px;
+      border-radius:5px;margin-left:7px;vertical-align:middle;}
+    .lb-badge.open{background:#e0f1ec;color:#2f8a78;}
+    .lb-badge.prop{background:#e3eefb;color:#3f74b3;}
+    @media(max-width:600px){.lb-controls{flex-direction:column;align-items:stretch;}.lb-search{min-width:0;}}
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-2 publication-title">
+            PerceptionRubrics<br>
+            Calibrating Multimodal Evaluation to Human Perception
+          </h1>
+          <b style="font-size:1.4rem; font-weight:700; margin: 0.6rem 0 1rem;">ICML 2026</b>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://weiyana.github.io" target="_blank" style="color: #e89854 !important;">Yana Wei</a><sup>*1</sup>,
+            </span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Hongbo Peng</a><sup>*2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #50ad5c !important;">Yanlin Lai</a><sup>*3</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Liang Zhao</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Kangheng Lin</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">En Yu</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Keyu Lv</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Han Zhou</a><sup>2</sup>,</span>
+            <br>
+            <span class="author-block"><a href="" target="_blank" style="color: #9d8cd1 !important;">Yin Tang</a><sup>4</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Haodong Li</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Mitt Huang</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Hangyu Guo</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="https://scholar.google.com/citations?user=MVZrGkYAAAAJ&hl=en" target="_blank" style="color: #4d9be7 !important;">Jianjian Sun</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Zheng Ge</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Xiangyu Zhang</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="" target="_blank" style="color: #4d9be7 !important;">Daxin Jiang</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://engineering.jhu.edu/faculty/vishal-patel/" target="_blank" style="color: #e89854 !important;">Vishal M. Patel</a><sup>&#8224;1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block" style="margin-right: 20px;"><b style="color:#f68946; font-weight:normal">&#x25B6 </b> Johns Hopkins University</span>
+            <span class="author-block" style="margin-right: 20px;"><b style="color:#4d9be7; font-weight:normal">&#x25B6 </b> StepFun</span>
+            <span class="author-block" style="margin-right: 20px;"><b style="color:#50ad5c; font-weight:normal">&#x25B6 </b> Tsinghua University</span>
+            <span class="author-block"><b style="color:#9d8cd1; font-weight:normal">&#x25B6 </b> Independent Researcher</span>
+            <span class="eql-cntrb" style="margin-right: 20px;"><small><br><sup>*</sup>Core Contribution</small></span>
+            <span class="eql-cntrb"><small><sup>&#8224;</sup>Corresponding Author</small></span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon" style="vertical-align: middle; font-size: 20px;">&#129303;</span>
+                  <span style="vertical-align: middle;">Dataset</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Overview / Abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Overview</h2>
+        <div class="content has-text-justified">
+          <p>
+            Current perception benchmarks suffer from an <b>evaluation paradox</b>: leaderboards are increasingly
+            saturated, yet models remain perceptually brittle in real-world use. We introduce
+            <b>PerceptionRubrics</b>, a rubric-based evaluation framework that shifts assessment from holistic semantic
+            matching to <b>rigorous atomic auditing</b>. It pairs <b>1,038</b> information-dense images with
+            <b>over 12,000</b> instance-specific rubrics, derived from <em>Golden Captions</em> constructed through a
+            novel <b>Circular Peer-Review</b> consensus pipeline and distilled into a dual-stream system of
+            <b>Must-Right</b> (essential facts) and <b>Easy-Wrong</b> (fine-grained details) rubrics.
+          </p>
+          <p>
+            Crucially, PerceptionRubrics implements a <b>Gated Scoring</b> mechanism: unlike linear averages, failure on
+            mandatory visual facts triggers sharp binary penalties. Extensive evaluation yields three insights:
+          </p>
+          <p>
+            (1) <b>The Reliability Gap.</b> Models often verify fragmented elements correctly yet fail strict
+            conjunctive constraints, exposing brittleness in dense domains such as GUIs.<br>
+            (2) <b>Open&ndash;Closed Stratification.</b> Contrary to reasoning trends, a persistent <b>~8%</b> perception
+            deficit separates the open-source frontier from proprietary leaders.<br>
+            (3) <b>Human-Aligned Rigor.</b> Our gated metrics substantially out-align conventional benchmarks with human
+            preference, validating that strict perceptual fidelity is a prerequisite for reliable generation.
+          </p>
+
+          <div class="columns is-centered has-text-centered">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">
+              <figure style="text-align: center;">
+                <img width="85%" src="static/images/figure-first.png" alt="Motivation of PerceptionRubrics">
+                <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px;">
+                  Fig 1: <b>Motivation.</b> Existing benchmarks can favor responses with key omissions, whereas humans
+                  prefer responses that capture more perceptually important details. PerceptionRubrics more clearly
+                  distinguishes model capabilities than DetailCaps and DOCCI.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Construction pipeline -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Benchmark Construction</h2>
+        <div class="content has-text-justified">
+          <p>
+            To bypass the visual-grounding gap of direct image-to-rubric generation, we adopt a
+            <b>caption-centric pipeline</b>. We first transcribe each image into a comprehensive
+            <em>Golden Caption</em>, then distill rubrics from it.
+          </p>
+          <ul>
+            <li>
+              <strong>Step 1 &mdash; Circular Peer-Review.</strong> Three top-tier MLLMs act as a
+              &ldquo;jury-and-generator&rdquo; ensemble: they generate independent descriptions, then iteratively
+              compare, rank, and rewrite them against the visual evidence to synthesize a superior consensus caption.
+            </li>
+            <li style="margin-top: 0.8em;">
+              <strong>Step 2 &mdash; Strict Consensus Filtering.</strong> Human experts act as final verifiers under a
+              discard-on-divergence protocol&mdash;only high-consensus samples are lightly verified and kept, focusing
+              human effort on high-confidence data.
+            </li>
+            <li style="margin-top: 0.8em;">
+              <strong>Dual-Stream Rubrics.</strong> From each Golden Caption we extract <b>Must-Right</b> rubrics
+              (a priori essential facts) and <b>Easy-Wrong</b> rubrics (a posteriori pitfalls mined from a pool of model
+              error patterns) using domain-specific adaptive prompts.
+            </li>
+          </ul>
+          <div class="columns is-centered has-text-centered" style="margin-top: 1.5rem;">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">
+              <figure style="text-align: center;">
+                <img width="100%" src="static/images/pipeline.png" alt="PerceptionRubrics construction pipeline">
+                <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px;">
+                  Fig 2: <b>Construction pipeline.</b> Golden Captions are synthesized via circular peer-review (top),
+                  then serve as anchors to generate Must-Right and Easy-Wrong rubrics via domain-specific prompting
+                  (bottom).
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <p>
+            The resulting benchmark contains <b>1,038</b> images and <b>12,004</b> rubrics
+            (<b>4,232</b> Must-Right + <b>7,772</b> Easy-Wrong; ~11.6 per image) spanning <b>seven domains</b>:
+            Natural Scene, Document &amp; OCR, Digital UI/UX, Structured Data, STEM &amp; Expert, Logic &amp; Puzzle,
+            and Creative &amp; Cultural. Golden Captions average <b>770</b> words&mdash;5&ndash;6&times; denser than
+            prior detailed-captioning benchmarks.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Gated scoring -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Gated Scoring</h2>
+        <div class="content has-text-justified">
+          <p>
+            We use an LLM-as-a-Judge to verify each rubric as a boolean (True/False), then apply a
+            <b>non-linear, gated</b> aggregation that mirrors human error sensitivity:
+          </p>
+          <ul>
+            <li>
+              <strong>Must-Right as the Gate.</strong> If a response fails <em>any</em> Must-Right criterion, the gate
+              closes (<em>G</em>&nbsp;=&nbsp;0) and the score collapses to zero&mdash;a single fatal hallucination is a
+              binary failure, not a minor fluctuation.
+            </li>
+            <li style="margin-top: 0.8em;">
+              <strong>Easy-Wrong for Differentiation.</strong> For responses that pass the gate
+              (<em>G</em>&nbsp;=&nbsp;1), the final score is the pass rate over the Easy-Wrong rubrics, rewarding
+              robustness against subtle, density-rich cognitive traps.
+            </li>
+          </ul>
+          <p>
+            This ensures a high score reflects not coarse semantic proximity but genuine perceptual reliability,
+            distinguishing acceptable approximations from catastrophic failures.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Main results -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Main Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            We evaluate <b>25</b> leading MLLMs. PerceptionRubrics reveals a pronounced performance stratification
+            obscured by traditional holistic benchmarks. The strongest model reaches only <b>70.07%</b>, while a widely
+            used proprietary model (GPT-4o) scores just <b>12.59%</b>. Performance is highest on natural scenes and
+            lowest in the <b>GUI</b> domain, and the best open-source model still trails the proprietary
+            state-of-the-art by <b>over 8%</b>&mdash;a gap that persists despite convergence on reasoning tasks.
+          </p>
+          <div class="lb-controls">
+            <div class="lb-tabs" id="lb-tabs">
+              <button class="lb-tab is-active" data-group="all">All</button>
+              <button class="lb-tab" data-group="open">Open-Source</button>
+              <button class="lb-tab" data-group="prop">Proprietary</button>
+            </div>
+            <input id="lb-search" class="lb-search" type="text" placeholder="Filter models…" autocomplete="off">
+          </div>
+
+          <div class="lb-wrap">
+            <table class="lb-table" id="lb-table">
+              <thead>
+                <tr>
+                  <th class="lb-rank" data-key="rank">#</th>
+                  <th class="lb-model lb-left" data-key="name">Model</th>
+                  <th data-key="params">Params</th>
+                  <th data-key="doc">Doc</th>
+                  <th data-key="logic">Logic</th>
+                  <th data-key="creative">Creative</th>
+                  <th data-key="gui">GUI</th>
+                  <th data-key="natural">Natural</th>
+                  <th data-key="stem">STEM</th>
+                  <th data-key="structured">Structured</th>
+                  <th class="lb-overall" data-key="overall">Overall</th>
+                </tr>
+              </thead>
+              <tbody id="lb-body"></tbody>
+            </table>
+          </div>
+          <p style="font-size: 0.85em; color: #777; margin-top: 8px; text-align:center;">
+            Table 1: <b>Fine-grained performance</b> across seven domains. Click a column header to sort;
+            per-column best is highlighted. All values are percentages (%).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Analysis -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Analysis</h2>
+        <div class="content has-text-justified">
+
+          <h2 class="title is-4">The Reliability Gap &amp; Failure Modes</h2>
+          <p>
+            Comparing <em>Atomic Accuracy</em> (mean pass rate over individual rubrics) with the stricter
+            <em>Must-Right Pass Rate</em> (all constraints satisfied) exposes a systematic <b>Reliability Gap</b>:
+            models pass most atomic checks yet fail their strict conjunction. The gap narrows as capability increases.
+            The <b>GUI</b> domain dominates perceptual failures across models.
+          </p>
+          <div class="columns is-centered has-text-centered" style="margin-top: 1rem;">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">
+              <figure style="text-align: center;">
+                <img width="100%" src="static/images/error-analysis.png" alt="Failure analysis">
+                <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px;">
+                  Fig 3: <b>Failure analysis.</b> (Left) Distribution of error sources across models. (Right) Atomic
+                  Accuracy vs. the stricter Must-Right-All-Pass rate.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <h2 class="title is-4" style="margin-top: 2rem;">Consistency of Perceptual Capabilities</h2>
+          <p>
+            We find a near-perfect linear correlation (<em>R</em><sup>2</sup>&nbsp;&approx;&nbsp;0.98) between
+            Must-Right Pass Rate and Easy-Wrong accuracy: models that fail to ground essential facts inevitably struggle
+            with subtle details and hallucination. Robust fine-grained understanding critically depends on foundational
+            perception.
+          </p>
+          <div class="columns is-centered has-text-centered" style="margin-top: 1rem;">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">
+              <figure style="text-align: center;">
+                <img width="62%" src="static/images/correlation.png" alt="Correlation analysis">
+                <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px;">
+                  Fig 4: <b>Correlation</b> between basic perceptual reliability and hallucination resistance.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <h2 class="title is-4" style="margin-top: 2rem;">Alignment with Human Preference</h2>
+          <p>
+            Against the <b>Vision Arena</b> human-preference leaderboard, PerceptionRubrics shows the strongest
+            alignment among compared captioning benchmarks, achieving a <b>Pearson 0.916</b> and a perfect
+            <b>Spearman 1.000</b> rank correlation. In contrast, DOCCI and DetailCaps assign nearly indistinguishable
+            (or even anti-correlated) scores to models with markedly different human ratings.
+          </p>
+          <div class="columns is-centered has-text-centered" style="margin-top: 1rem;">
+            <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">
+              <figure style="text-align: center;">
+                <img width="100%" src="static/images/human-alignment.png" alt="Human alignment">
+                <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px;">
+                  Fig 5: <b>Human alignment.</b> Benchmark score vs. Vision Arena Elo across overlapping models.
+                  PerceptionRubrics correlates most strongly with human preference.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <h2 class="title is-4" style="margin-top: 2rem;">Resistance to Length Bias</h2>
+          <p>
+            Caption length exhibits a negligible relationship with PerceptionRubrics scores, indicating the metric
+            rewards precise, verifiable perception rather than verbosity.
+          </p>
+          <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <img src="static/images/length-bias-gemini.png" alt="Length bias Gemini" style="width: 42%; min-width: 280px;">
+            <img src="static/images/length-bias-kimi.png" alt="Length bias Kimi" style="width: 42%; min-width: 280px;">
+          </div>
+          <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px; text-align:center;">
+            Fig 6: <b>Length bias.</b> Score vs. response word count for representative models.
+          </figcaption>
+
+          <h2 class="title is-4" style="margin-top: 2rem;">Evaluation Robustness &amp; Rubric Coverage</h2>
+          <p>
+            Swapping the judge model preserves the ranking order, and evaluation stability improves monotonically as
+            rubric coverage increases&mdash;confirming the robustness of both the rubric-generation pipeline and the
+            resulting metric to judge choice and sampling variability.
+          </p>
+          <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+            <img src="static/images/robustness.png" alt="Judge robustness" style="width: 42%; min-width: 280px;">
+            <img src="static/images/rubric-coverage.png" alt="Rubric coverage vs stability" style="width: 50%; min-width: 300px;">
+          </div>
+          <figcaption style="font-size: 0.9em; color: #555; margin-top: 8px; text-align:center;">
+            Fig 7: (Left) Consistent rankings under different judges. (Right) Stability improves with rubric coverage.
+          </figcaption>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- BibTeX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    If you find this work useful, please consider citing it:
+    <pre><code>
+@inproceedings{wei2026perceptionrubrics,
+  title={PerceptionRubrics: Calibrating Multimodal Evaluation to Human Perception},
+  author={Wei, Yana and Peng, Hongbo and Lai, Yanlin and Zhao, Liang and Lin, Kangheng
+  and Yu, En and Lv, Keyu and Zhou, Han and Tang, Yin and Li, Haodong and Huang, Mitt
+  and Guo, Hangyu and Sun, Jianjian and Ge, Zheng and Zhang, Xiangyu and Jiang, Daxin
+  and Patel, Vishal M.},
+  booktitle={Proceedings of the 43rd International Conference on Machine Learning (ICML)},
+  year={2026}
+}
+    </code></pre>
+    Thanks for your reading and support! For questions or suggestions, feel free to contact us:
+    <a href="mailto:ywei66@jh.edu" style="color: #3273dc;">ywei66@jh.edu</a>,
+    <a href="mailto:vpatel36@jhu.edu" style="color: #3273dc;">vpatel36@jhu.edu</a>
+  </div>
+</section>
+
+<script>
+(function(){
+  // [name, params, type, Doc, Logic, Creative, GUI, Natural, STEM, Structured, Overall]
+  var RAW = [
+    ["Qwen2.5-VL-7B","7B","open",6.53,3.06,6.71,5.13,20.70,14.74,6.14,8.37],
+    ["Qwen2.5-VL-32B","32B","open",14.22,8.89,13.32,14.39,36.60,20.13,19.07,17.79],
+    ["Qwen3-VL-8B-Thinking","8B","open",39.24,23.20,31.18,29.04,55.83,36.35,28.44,34.13],
+    ["Step3-VL-10B","10B","open",32.07,33.90,34.23,23.25,54.55,48.94,38.70,35.97],
+    ["Qwen3-VL-235B-A22B-Thinking","235B","open",43.08,35.84,39.24,33.28,56.73,53.42,41.04,41.88],
+    ["MiniMax-M3","428B","open",34.42,35.17,37.82,40.58,54.85,58.39,55.40,44.82],
+    ["MiMo-V2.5","310B","open",44.06,37.46,42.82,35.25,55.35,61.04,53.23,45.65],
+    ["Step-3.7-Flash","196B","open",45.81,36.45,48.20,42.60,62.72,65.40,46.40,48.62],
+    ["Kimi-K2.5","1T","open",46.85,49.27,48.84,46.37,60.07,59.57,50.49,50.78],
+    ["Kimi-K2.6","1T","open",46.21,50.05,49.31,47.81,58.87,60.15,54.67,51.77],
+    ["Qwen3.5-397B-A17B","397B","open",60.17,58.29,56.85,54.76,68.51,77.59,64.00,61.61],
+    ["GPT-4o-2024-05-13","–","prop",10.32,10.35,10.00,7.01,23.89,12.14,17.33,12.59],
+    ["Seed-1.6","–","prop",49.38,27.52,40.23,43.94,57.47,48.40,43.00,44.54],
+    ["GLM-5V-Turbo","–","prop",50.37,46.70,46.08,39.84,61.48,54.23,47.12,48.18],
+    ["Seed-1.8","–","prop",58.77,41.33,53.31,50.26,70.62,55.44,51.73,54.34],
+    ["GPT-5.5","–","prop",43.14,52.03,43.82,59.53,57.75,61.78,64.54,55.23],
+    ["Gemini-3-Flash","–","prop",54.68,58.59,57.49,51.55,71.17,77.55,59.49,59.83],
+    ["GPT-5.4","–","prop",55.19,59.25,47.66,62.61,60.43,68.46,70.61,60.81],
+    ["Seed-2.0-Pro","–","prop",64.95,62.41,65.59,48.22,75.74,71.67,56.40,61.44],
+    ["Qwen3.5-Plus","–","prop",56.87,57.82,55.95,53.94,69.47,72.81,70.85,61.61],
+    ["Qwen3.6-Plus","–","prop",60.78,59.77,56.82,52.69,70.16,77.25,68.74,62.30],
+    ["Gemini-3-Pro","–","prop",68.35,63.68,71.51,57.57,76.65,77.83,74.50,68.79],
+    ["Gemini-3.1-Pro","–","prop",67.86,63.66,70.00,59.37,74.85,80.37,74.80,69.02],
+    ["Gemini-3.5-Flash","–","prop",71.64,64.32,72.03,54.10,78.89,86.05,76.23,69.88],
+    ["Seed-2.0-Lite","–","prop",73.56,61.48,72.62,59.07,79.20,80.85,72.59,70.07]
+  ];
+  var NUM = ["doc","logic","creative","gui","natural","stem","structured","overall"];
+  var DATA = RAW.map(function(r){
+    return {name:r[0],params:r[1],type:r[2],doc:r[3],logic:r[4],creative:r[5],
+            gui:r[6],natural:r[7],stem:r[8],structured:r[9],overall:r[10]};
+  });
+  // fixed overall rank (1 = highest overall)
+  var byOverall = DATA.slice().sort(function(a,b){return b.overall-a.overall;});
+  byOverall.forEach(function(d,i){d.rank=i+1;});
+
+  var body=document.getElementById("lb-body");
+  var ths=[].slice.call(document.querySelectorAll("#lb-table thead th"));
+  ths.forEach(function(th){var s=document.createElement("span");s.className="lb-arrow";th.appendChild(s);});
+
+  var state={group:"all",query:"",key:"overall",dir:-1};
+
+  function colBest(rows){
+    var best={};
+    NUM.forEach(function(k){best[k]=Math.max.apply(null,rows.map(function(d){return d[k];}));});
+    return best;
+  }
+  function fmt(v){return v.toFixed(2);}
+
+  function render(){
+    var rows=DATA.filter(function(d){
+      if(state.group!=="all" && d.type!==state.group) return false;
+      if(state.query && d.name.toLowerCase().indexOf(state.query)<0) return false;
+      return true;
+    });
+    var k=state.key, dir=state.dir;
+    rows.sort(function(a,b){
+      var va=a[k], vb=b[k];
+      if(k==="name"){return dir*va.localeCompare(vb);}
+      if(k==="params"){return dir*(a.rank-b.rank);} // params not numeric; fall back to rank
+      return dir*((va<vb?-1:va>vb?1:0));
+    });
+    var best=colBest(rows);
+    body.innerHTML=rows.map(function(d){
+      var badge='<span class="lb-badge '+d.type+'">'+(d.type==="open"?"Open":"Prop")+'</span>';
+      var cells=NUM.map(function(k){
+        var cls=(k==="overall"?"lb-overall ":"")+(d[k]===best[k]?"lb-best":"");
+        return '<td class="'+cls.trim()+'">'+fmt(d[k])+'</td>';
+      }).join("");
+      return '<tr><td class="lb-rank">'+d.rank+'</td>'+
+             '<td class="lb-model">'+d.name+badge+'</td>'+
+             '<td>'+d.params+'</td>'+cells+'</tr>';
+    }).join("");
+    ths.forEach(function(th){
+      th.classList.toggle("sorted",th.dataset.key===k);
+      var a=th.querySelector(".lb-arrow");
+      a.textContent=th.dataset.key===k?(dir<0?"▼":"▲"):"";
+    });
+  }
+
+  ths.forEach(function(th){
+    th.addEventListener("click",function(){
+      var k=th.dataset.key;
+      if(state.key===k){state.dir*=-1;}
+      else{state.key=k;state.dir=(k==="name")?1:-1;}
+      render();
+    });
+  });
+  document.getElementById("lb-tabs").addEventListener("click",function(e){
+    var b=e.target.closest(".lb-tab"); if(!b) return;
+    [].forEach.call(this.children,function(c){c.classList.remove("is-active");});
+    b.classList.add("is-active"); state.group=b.dataset.group; render();
+  });
+  document.getElementById("lb-search").addEventListener("input",function(){
+    state.query=this.value.trim().toLowerCase(); render();
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
