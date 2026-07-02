@@ -25,6 +25,12 @@
   <link rel="stylesheet" href="static/css/index.css">
 
   <style>
+    .pr-gradient{
+      background:linear-gradient(90deg,#e89854 0%,#e0605e 22%,#9d8cd1 48%,#4d9be7 74%,#50ad5c 100%);
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;color:transparent;
+      font-weight:800;letter-spacing:0.3px;
+    }
     .lb-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:1.2rem 0 0.8rem;}
     .lb-tabs{display:inline-flex;background:#e3f0fa;border-radius:9px;padding:4px;}
     .lb-tab{border:none;background:transparent;color:#5a7185;font:inherit;font-weight:600;font-size:0.92rem;
@@ -75,7 +81,7 @@
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-2 publication-title">
-            PerceptionRubrics<br>
+            <span class="pr-gradient">PerceptionRubrics</span><br>
             Calibrating Multimodal Evaluation to Human Perception
           </h1>
           <b style="font-size:1.4rem; font-weight:700; margin: 0.6rem 0 1rem;">ICML 2026</b>
